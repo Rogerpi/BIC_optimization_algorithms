@@ -42,7 +42,7 @@ function GA(popsize,f)
   
 end
 
-function Ps = selectwithReplacement(people,t)
+function Ps = selectWithReplacement(people,t)
     %Tournament Selection
     len = size(people.pose,2);
     sel = randsample(len,t,true); % select randomly with replacement
@@ -55,6 +55,17 @@ function Ps = selectwithReplacement(people,t)
     Ps = people.pose(:,best_idx);
 end
 
-function [Ca,Cb] = Crosover(Pa,Pb)
-
+function [Ca,Cb] = Crossover(Pa,Pb)
+    % Pa and Pb are single column vectors
+    len = size(Pa,1);
+    Ca = Pa;
+    Cb = Pb;
+    c = randsample(len,1);
+    d = randsample(len,1);
+    if c > d
+        [d,c] = deal(c,d); %swap data
+    end
+    if c ~= d
+        [Ca(c:d-1),Cb(c:d-1)] = deal(Cb(c:d-1),Ca(c:d-1));
+    end   
 end
