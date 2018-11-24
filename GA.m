@@ -1,16 +1,16 @@
-function GA(popsize,f)
-    max_it = 5000;
-    dimention = 2; %y = f(a,b);
-    k_rand_pose = 10;
-    t_size = 2;
-    
+function [x,f_x] = GA(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range)
     %Algorithm initialization
     
     hold on
     fprintf("Init Individuals...");
     
+    %To spread the population
+    range = max_range - min_range;
+    center = min_range + range/2;
+    
     population = {};
-    population.pose = rand(dimention,popsize)*k_rand_pose;
+    population.pose = rand(dimention,popsize).*range'*2 - range' + center'; %TODO: initialize
+
     population.fitness = [];
     population.best_pose = [];
     population.best_fitness = -Inf;
@@ -34,8 +34,8 @@ function GA(popsize,f)
             [Pa,idx_a] = TournamentSelection(population,t_size);
             [Pb,idx_b] = TournamentSelection(population,t_size);
             [Ca,Cb] = Crossover(Pa,Pb);
-            population.pose(:,idx_a) = Mutate(Ca);
-            population.pose(:,idx_b) = Mutate(Cb);
+            population.pose(:,idx_a) = Mutate(Ca,mut_fact);
+            population.pose(:,idx_b) = Mutate(Cb,mut_fact);
         end
         
            
@@ -45,6 +45,8 @@ function GA(popsize,f)
         
     end
   
+    x = population.best_pose;
+    f_x = population.best_fitness;
 end
 
 function [Ps,idx] = TournamentSelection(population,t)
@@ -76,11 +78,11 @@ function [Ca,Cb] = Crossover(Pa,Pb)
     end   
 end
 
-function M = Mutate(C)
+function M = Mutate(C,mut_fact)
     M = C;
     for i=1:size(C)
         x = rand(2,1);
-        if x(1) > 0.5
+        if x(1) > mut_fact
             M(i) = M(i) + x(2)*2-1;
         end
     end

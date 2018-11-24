@@ -1,10 +1,10 @@
-function PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f)
+function [x,f_x] = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range)
     %Define more parameters
-    %TODO as arguments
-    max_it = 400;
-    dimention = 2; %y = f(a,b);
     k_rand_vel = 1;
-    k_rand_pose = 100;
+    
+    %To spread the population
+    range = max_range - min_range;
+    center = min_range + range/2;
     
     %Others
     n_inf = round(swarmsize*inf_ratio);
@@ -15,7 +15,7 @@ function PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f)
     
     tic   
     swarm = {};
-    swarm.pose = rand(dimention,swarmsize)*k_rand_pose*2 - k_rand_pose; %TODO: initialize
+    swarm.pose = rand(dimention,swarmsize).*range'*2 - range' + center'; %TODO: initialize
     swarm.vel = rand(dimention,swarmsize)*k_rand_vel*2 - k_rand_vel;
     swarm.mem_pose = swarm.pose;
     swarm.mem_fitness = repmat(-Inf,1,swarmsize); %first iteration is pointless so far     
@@ -88,5 +88,8 @@ function PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f)
         delete(sc_best);
         
     end
+    
+    x = swarm.best_pose;
+    f_x = swarm.best_fitness;
 end
 

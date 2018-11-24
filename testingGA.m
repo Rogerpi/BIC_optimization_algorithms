@@ -15,6 +15,6 @@ fprintf("Using function n %n \n",n_fun);
 
 f = @(y) -benchmark_func(y,n_fun);
 %f = @(v) 100000 * gauss(v(:,1),v(:,2));
-GA(100,f);
+GA(100,2,0.3,f,4000,2,[-5,-5],[5,5]);
 
 

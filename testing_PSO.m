@@ -21,6 +21,6 @@ gamma = 0.25;
 delta = 0.5;
 inf_ratio = 0.5;
 epsilon = 1;
-PSO_standard(100,alpha,beta,gamma,delta,epsilon,inf_ratio,f);
+PSO_standard(100,alpha,beta,gamma,delta,epsilon,inf_ratio,f,400,2,[-5,-5],[5,5]);
 
 
