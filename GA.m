@@ -30,8 +30,8 @@ function GA(popsize,f)
             [Pa,idx_a] = TournamentSelection(people);
             [Pb,idx_b] = TournamentSelection(people);
             [Ca,Cb] = Crossover(Pa,Pb);
-            Q(:,idx_a) = Ca;
-            Q(:,idx_b) = Cb;
+            Q(:,idx_a) = Mutate(Ca);
+            Q(:,idx_b) = Mutate(Cb);
         end
         
            
@@ -69,4 +69,8 @@ function [Ca,Cb] = Crossover(Pa,Pb)
     if c ~= d
         [Ca(c:d-1),Cb(c:d-1)] = deal(Cb(c:d-1),Ca(c:d-1));
     end   
+end
+
+function M = Mutate(C)
+    [M,~] = Crossover(C,C);
 end
