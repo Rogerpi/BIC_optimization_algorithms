@@ -1,4 +1,5 @@
 
+%% Call function, to run the GA algorith with or without visualization without losing performance
 function [x,f_x] = GA(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,varargin)
     if nargin == 8 || ~varargin{1}
         [x,f_x] = GA_core(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range);
@@ -17,6 +18,7 @@ function [x,f_x] = GA(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_r
     end
 end
 
+%% GA algorithm, no visualization
 function [x,f_x] = GA_core(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range)
     %Algorithm initialization
 
@@ -52,6 +54,7 @@ function [x,f_x] = GA_core(popsize,t_size,mut_fact,f,max_it,dimention,min_range,
     f_x = population.best_fitness;
 end
 
+%% Same GA Algorithm but plotting (2D input only)
 function [x,f_x] = GA_viz(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,step)
     %Algorithm initialization
     
@@ -101,6 +104,7 @@ function [x,f_x] = GA_viz(popsize,t_size,mut_fact,f,max_it,dimention,min_range,m
     f_x = population.best_fitness;
 end
 
+%% Tournament Selection algorithm
 function [Ps,idx] = TournamentSelection(population,t)
     %Tournament Selection
     len = size(population.pose,2);
@@ -130,6 +134,8 @@ function [Ca,Cb] = Crossover(Pa,Pb)
     end   
 end
 
+%% Mutate algorithm. Randomly adds noise 
+% TODO: dinamically decide the amount of noise
 function M = Mutate(C,mut_fact)
     M = C;
     for i=1:size(C)
