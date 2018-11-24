@@ -18,7 +18,7 @@ function [x,f_x] = PSO(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_
     end
 end
 
-
+%% PSO Standard algorithm, no visualization
 function [x,f_x] = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range)
     %Define more parameters
     k_rand_vel = 1;
@@ -87,6 +87,7 @@ function [x,f_x] = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_rat
     f_x = swarm.best_fitness;
 end
 
+%% PSO standard algorithm, visualization (Only 2D input)
 function [x,f_x] = PSO_standard_viz(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range,step)
     %Define more parameters
     k_rand_vel = 1;
