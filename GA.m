@@ -27,11 +27,11 @@ function GA(popsize,f)
 
         end
         for p = 1:2:round(popsize)
-            Pa = selectWithReplacement(people);
-            Pb = selectWithReplacement(people);
+            [Pa,idx_a] = TournamentSelection(people);
+            [Pb,idx_b] = TournamentSelection(people);
             [Ca,Cb] = Crossover(Pa,Pb);
-            Q(:,p) = Ca;
-            Q(:,p+1) = Cb;
+            Q(:,idx_a) = Ca;
+            Q(:,idx_b) = Cb;
         end
         
            
@@ -42,17 +42,18 @@ function GA(popsize,f)
   
 end
 
-function Ps = selectWithReplacement(people,t)
+function [Ps,idx] = TournamentSelection(people,t)
     %Tournament Selection
     len = size(people.pose,2);
     sel = randsample(len,t,true); % select randomly with replacement
-    best_idx = sel(1);
+    idx = sel(1);
     for i=2:len
-        if people.fitness(sel(i)) > people.fitness(best_idx)
-           best_idx = sel(i); 
+        if people.fitness(sel(i)) > people.fitness(idx)
+           idx = sel(i); 
         end
     end
-    Ps = people.pose(:,best_idx);
+    Ps = people.pose(:,idx);
+    
 end
 
 function [Ca,Cb] = Crossover(Pa,Pb)
