@@ -1,4 +1,93 @@
+
+%% Call function, to run the PSO algorith with or without visualization without losing performance
+function [x,f_x] = PSO(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range,varargin)
+    if nargin == 12 || ~varargin{1}
+        [x,f_x] = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range);
+    else     
+        if dimention > 2
+            disp("Visualization only in 2D functions")
+            return
+        else
+            if nargin == 13
+                step = 0.05;
+            else
+                step = varargin{2};
+            end
+            [x,f_x] = PSO_standard_viz(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range,step);
+        end 
+    end
+end
+
+
 function [x,f_x] = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range)
+    %Define more parameters
+    k_rand_vel = 1;
+    
+    %To spread the population
+    range = max_range - min_range;
+    center = min_range + range/2;
+    
+    %Others
+    n_inf = round(swarmsize*inf_ratio);
+    
+    %Algorithm Starts
+    swarm = {};
+    swarm.pose = rand(dimention,swarmsize).*range'*2 - range' + center'; %TODO: initialize
+    swarm.vel = rand(dimention,swarmsize)*k_rand_vel*2 - k_rand_vel;
+    swarm.mem_pose = swarm.pose;
+    swarm.mem_fitness = repmat(-Inf,1,swarmsize); %first iteration is pointless so far     
+    swarm.best_pose = [];
+    swarm.best_fitness = -Inf;
+    
+    %x_star = zeros(dimention,swarmsize);
+    x_plus = zeros(dimention,swarmsize);
+    %x_excl = zeros(dimention,swarmsize);
+    
+
+    for it=1:max_it
+        %AssesFitness
+        fitness = f(swarm.pose')';      
+        
+        %Update best particles
+        for p =1:swarmsize %TODO vectorize
+            if fitness(p) > swarm.mem_fitness(p)
+                swarm.mem_fitness(p) = fitness(p);
+                swarm.mem_pose(:,p) = swarm.pose(:,p);
+            end
+        end
+        %Update best of bests
+        [swarm.best_fitness,best_idx] = max(swarm.mem_fitness);
+        swarm.best_pose = swarm.mem_pose(:,best_idx);
+        
+        %fill x_star
+        x_star = swarm.mem_pose;
+        %fill x_plus. Select gamma random particles and get the best  
+        for p=1:swarmsize
+            %random permutation that includes the current particle
+            idx = [randperm(swarmsize-1,n_inf),p];
+            %get best fitness p
+            [~,best_idx] = max(swarm.mem_fitness(:,idx));
+            %get best particle
+            x_plus(:,p) = swarm.mem_pose(:,best_idx);
+
+        end
+        %fill x_excl
+        x_excl = repmat(swarm.best_pose,1,swarmsize);       
+        
+        %Get b, c, d
+        b = rand(dimention,1)*beta;
+        c = rand(dimention,1)*gamma;
+        d = rand(dimention,1)*delta;
+        
+        swarm.vel = alpha*swarm.vel + b.*(x_star-swarm.pose) + c.*(x_plus - swarm.pose) + d.*(x_excl - swarm.pose);        
+        swarm.pose = swarm.pose + epsilon*swarm.vel;      
+    end
+    
+    x = swarm.best_pose;
+    f_x = swarm.best_fitness;
+end
+
+function [x,f_x] = PSO_standard_viz(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range,step)
     %Define more parameters
     k_rand_vel = 1;
     
@@ -58,18 +147,15 @@ function [x,f_x] = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_rat
         %fill x_plus. Select gamma random particles and get the best  
         for p=1:swarmsize
             %random permutation that includes the current particle
-            others = [1:p-1,p+1:swarmsize];
             idx = [randperm(swarmsize-1,n_inf),p];
             %get best fitness p
             [~,best_idx] = max(swarm.mem_fitness(:,idx));
             %get best particle
             x_plus(:,p) = swarm.mem_pose(:,best_idx);
-
         end
         %fill x_excl
         x_excl = repmat(swarm.best_pose,1,swarmsize);
-        
-        
+          
         %Get b, c, d
         b = rand(dimention,1)*beta;
         c = rand(dimention,1)*gamma;
@@ -77,19 +163,12 @@ function [x,f_x] = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_rat
         
         swarm.vel = alpha*swarm.vel + b.*(x_star-swarm.pose) + c.*(x_plus - swarm.pose) + d.*(x_excl - swarm.pose);        
         swarm.pose = swarm.pose + epsilon*swarm.vel;
-        
-        %scatter(swarm.pose(1,:),swarm.pose(2,:));
-        %ylim([-150,150])
-        %xlim([-150,150])
-        %zlim([-1000,10000])
 
-        pause(0.2);
+        pause(step);
         delete(sc);
-        delete(sc_best);
-        
+        delete(sc_best);      
     end
     
     x = swarm.best_pose;
     f_x = swarm.best_fitness;
 end
-
