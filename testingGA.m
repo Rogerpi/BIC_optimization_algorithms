@@ -11,7 +11,7 @@ n_fun = 10;
 %Choose fun_num
 
 func_plot
-fprintf("Using function n %n \n",n_fun);
+fprintf("Using function n %d \n",n_fun);
 
 f = @(y) -benchmark_func(y,n_fun);
 %f = @(v) 100000 * gauss(v(:,1),v(:,2));
