@@ -10,6 +10,7 @@ function PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f)
     n_inf = round(swarmsize*inf_ratio);
     
     %Algorithm Starts
+    hold on
     fprintf("Init Particles... ")
     
     tic   
@@ -22,13 +23,12 @@ function PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f)
     best_swarm.vel = swarm.vel;
     best_swarm.fitness = repmat(-Inf,1,swarmsize); %first iteration is pointless so far     
     toc
-    hold on
-    sc = scatter3(0,0,0);
     
     %x_star = zeros(dimention,swarmsize);
     x_plus = zeros(dimention,swarmsize);
     %x_excl = zeros(dimention,swarmsize);
     
+
     %TODO first iteration or start moving
     fprintf("Start Iterating...\n")
     for it=1:max_it
@@ -38,8 +38,6 @@ function PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f)
         %AssesFitness
         fitness = f(swarm.pose')'; 
         
-        delete(sc)
-        hold on
         sc = scatter3(swarm.pose(2,:),swarm.pose(1,:),-fitness);
         %Update best particles
         for p =1:swarmsize %TODO vectorize
@@ -79,6 +77,7 @@ function PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f)
         %zlim([-1000,10000])
 
         pause(0.2);
+        delete(sc);
         
     end
 end
