@@ -43,18 +43,16 @@ function GA(popsize,f)
 end
 
 function Ps = selectwithReplacement(people,t)
-%Tournament Selection
-len = size(people.pose,2);
-sel = randsample(len,t,true); % select randomly with replacement
-best_idx = sel(1);
-for i=2:len
-    if people.fitness(sel(i)) > people.fitness(best_idx)
-       best_idx = sel(i); 
+    %Tournament Selection
+    len = size(people.pose,2);
+    sel = randsample(len,t,true); % select randomly with replacement
+    best_idx = sel(1);
+    for i=2:len
+        if people.fitness(sel(i)) > people.fitness(best_idx)
+           best_idx = sel(i); 
+        end
     end
-end
-
-Ps = people.pose(:,best_idx);
-
+    Ps = people.pose(:,best_idx);
 end
 
 function [Ca,Cb] = Crosover(Pa,Pb)
