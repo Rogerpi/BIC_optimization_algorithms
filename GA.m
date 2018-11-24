@@ -20,15 +20,16 @@ function GA(popsize,f)
     for it=1:max_it
         fprintf("Iteration: %d \n",it);
         people.fitness = f(people.pose')';
-        sc = scatter3(people.pose(2,:),people.pose(1,:),-people.fitness);
         for p = 1:popsize 
             if people.fitness(p) > people.best_fitness
                 people.best_fitness = people.fitness(p);
                 people.best_pose = people.pose(:,p);
                 fprintf("Best found \n");
             end
-
         end
+        sc_best = scatter3(people.best_pose(2),people.best_pose(1),-people.best_fitness,'MarkerEdgeColor',[0 .5 .5],'MarkerFaceColor',[0 .7 .7]);
+        sc = scatter3(people.pose(2,:),people.pose(1,:),-people.fitness);
+
         for p = 1:2:round(popsize)
             [Pa,idx_a] = TournamentSelection(people,t_size);
             [Pb,idx_b] = TournamentSelection(people,t_size);
@@ -40,6 +41,7 @@ function GA(popsize,f)
            
         pause(0.05);
         delete(sc);
+        delete(sc_best);
         
     end
   
