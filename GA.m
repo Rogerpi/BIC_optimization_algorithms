@@ -9,33 +9,33 @@ function GA(popsize,f)
     hold on
     fprintf("Init Individuals...");
     
-    people = {};
-    people.pose = rand(dimention,popsize)*k_rand_pose;
-    people.fitness = [];
-    people.best_pose = [];
-    people.best_fitness = -Inf;
+    population = {};
+    population.pose = rand(dimention,popsize)*k_rand_pose;
+    population.fitness = [];
+    population.best_pose = [];
+    population.best_fitness = -Inf;
     
     Q = zeros(dimention,popsize);
     fprintf("Done!\n");
     for it=1:max_it
         fprintf("Iteration: %d \n",it);
-        people.fitness = f(people.pose')';
+        population.fitness = f(population.pose')';
         for p = 1:popsize 
-            if people.fitness(p) > people.best_fitness
-                people.best_fitness = people.fitness(p);
-                people.best_pose = people.pose(:,p);
+            if population.fitness(p) > population.best_fitness
+                population.best_fitness = population.fitness(p);
+                population.best_pose = population.pose(:,p);
                 fprintf("Best found \n");
             end
         end
-        sc_best = scatter3(people.best_pose(2),people.best_pose(1),-people.best_fitness,'MarkerEdgeColor',[0 .5 .5],'MarkerFaceColor',[0 .7 .7]);
-        sc = scatter3(people.pose(2,:),people.pose(1,:),-people.fitness);
+        sc_best = scatter3(population.best_pose(2),population.best_pose(1),-population.best_fitness,'MarkerEdgeColor',[0 .5 .5],'MarkerFaceColor',[0 .7 .7]);
+        sc = scatter3(population.pose(2,:),population.pose(1,:),-population.fitness);
 
         for p = 1:2:round(popsize)
-            [Pa,idx_a] = TournamentSelection(people,t_size);
-            [Pb,idx_b] = TournamentSelection(people,t_size);
+            [Pa,idx_a] = TournamentSelection(population,t_size);
+            [Pb,idx_b] = TournamentSelection(population,t_size);
             [Ca,Cb] = Crossover(Pa,Pb);
-            people.pose(:,idx_a) = Mutate(Ca);
-            people.pose(:,idx_b) = Mutate(Cb);
+            population.pose(:,idx_a) = Mutate(Ca);
+            population.pose(:,idx_b) = Mutate(Cb);
         end
         
            
@@ -47,17 +47,17 @@ function GA(popsize,f)
   
 end
 
-function [Ps,idx] = TournamentSelection(people,t)
+function [Ps,idx] = TournamentSelection(population,t)
     %Tournament Selection
-    len = size(people.pose,2);
+    len = size(population.pose,2);
     sel = randsample(len,t,true); % select randomly with replacement
     idx = sel(1);
     for i=2:t
-        if people.fitness(sel(i)) > people.fitness(idx)
+        if population.fitness(sel(i)) > population.fitness(idx)
            idx = sel(i); 
         end
     end
-    Ps = people.pose(:,idx);
+    Ps = population.pose(:,idx);
     
 end
 
