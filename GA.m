@@ -1,4 +1,58 @@
-function [x,f_x] = GA(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range)
+
+function [x,f_x] = GA(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,varargin)
+    if nargin == 8 || ~varargin{1}
+        [x,f_x] = GA_core(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range);
+    else     
+        if dimention > 2
+            disp("Visualization only in 2D functions")
+            return
+        else
+            if nargin == 9
+                step = 0.05;
+            else
+                step = varargin{2};
+            end
+            [x,f_x] = GA_viz(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,step);
+        end 
+    end
+end
+
+function [x,f_x] = GA_core(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range)
+    %Algorithm initialization
+
+    %To spread the population
+    range = max_range - min_range;
+    center = min_range + range/2;
+    
+    population = {};
+    population.pose = rand(dimention,popsize).*range'*2 - range' + center'; %TODO: initialize
+
+    population.fitness = [];
+    population.best_pose = [];
+    population.best_fitness = -Inf;
+
+    for it=1:max_it
+        population.fitness = f(population.pose')';
+        for p = 1:popsize 
+            if population.fitness(p) > population.best_fitness
+                population.best_fitness = population.fitness(p);
+                population.best_pose = population.pose(:,p);
+            end
+        end
+        for p = 1:2:round(popsize)
+            [Pa,idx_a] = TournamentSelection(population,t_size);
+            [Pb,idx_b] = TournamentSelection(population,t_size);
+            [Ca,Cb] = Crossover(Pa,Pb);
+            population.pose(:,idx_a) = Mutate(Ca,mut_fact);
+            population.pose(:,idx_b) = Mutate(Cb,mut_fact);
+        end
+    end
+  
+    x = population.best_pose;
+    f_x = population.best_fitness;
+end
+
+function [x,f_x] = GA_viz(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,step)
     %Algorithm initialization
     
     hold on
@@ -15,7 +69,6 @@ function [x,f_x] = GA(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_r
     population.best_pose = [];
     population.best_fitness = -Inf;
     
-    Q = zeros(dimention,popsize);
     fprintf("Done!\n");
     for it=1:max_it
         fprintf("Iteration: %d \n",it);
@@ -37,9 +90,8 @@ function [x,f_x] = GA(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_r
             population.pose(:,idx_a) = Mutate(Ca,mut_fact);
             population.pose(:,idx_b) = Mutate(Cb,mut_fact);
         end
-        
-           
-        pause(0.05);
+     
+        pause(step);
         delete(sc);
         delete(sc_best);
         
