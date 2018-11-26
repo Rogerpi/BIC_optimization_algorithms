@@ -1,8 +1,8 @@
 
 %% Call function, to run the GA algorith with or without visualization without losing performance
-function [x,f_x] = GA(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,varargin)
+function population = GA(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,varargin)
     if nargin == 8 || ~varargin{1}
-        [x,f_x] = GA_core(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range);
+        population = GA_core(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range);
     else     
         if dimention > 2
             disp("Visualization only in 2D functions")
@@ -13,13 +13,13 @@ function [x,f_x] = GA(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_r
             else
                 step = varargin{2};
             end
-            [x,f_x] = GA_viz(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,step);
+            population = GA_viz(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,step);
         end 
     end
 end
 
 %% GA algorithm, no visualization
-function [x,f_x] = GA_core(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range)
+function population = GA_core(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range)
     %Algorithm initialization
 
     %To spread the population
@@ -49,13 +49,11 @@ function [x,f_x] = GA_core(popsize,t_size,mut_fact,f,max_it,dimention,min_range,
             population.pose(:,idx_b) = Mutate(Cb,mut_fact);
         end
     end
-  
-    x = population.best_pose;
-    f_x = population.best_fitness;
+
 end
 
 %% Same GA Algorithm but plotting (2D input only)
-function [x,f_x] = GA_viz(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,step)
+function population = GA_viz(popsize,t_size,mut_fact,f,max_it,dimention,min_range,max_range,step)
     %Algorithm initialization
     
     hold on
@@ -99,9 +97,7 @@ function [x,f_x] = GA_viz(popsize,t_size,mut_fact,f,max_it,dimention,min_range,m
         delete(sc_best);
         
     end
-  
-    x = population.best_pose;
-    f_x = population.best_fitness;
+
 end
 
 %% Tournament Selection algorithm

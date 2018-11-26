@@ -1,8 +1,8 @@
 
 %% Call function, to run the PSO algorith with or without visualization without losing performance
-function [x,f_x] = PSO(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range,varargin)
+function swarm = PSO(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range,varargin)
     if nargin == 12 || ~varargin{1}
-        [x,f_x] = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range);
+       swarm = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range);
     else     
         if dimention > 2
             disp("Visualization only in 2D functions")
@@ -13,13 +13,13 @@ function [x,f_x] = PSO(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_
             else
                 step = varargin{2};
             end
-            [x,f_x] = PSO_standard_viz(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range,step);
+            swarm = PSO_standard_viz(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range,step);
         end 
     end
 end
 
 %% PSO Standard algorithm, no visualization
-function [x,f_x] = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range)
+function swarm = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range)
     %Define more parameters
     k_rand_vel = 1;
     
@@ -82,13 +82,11 @@ function [x,f_x] = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_rat
         swarm.vel = alpha*swarm.vel + b.*(x_star-swarm.pose) + c.*(x_plus - swarm.pose) + d.*(x_excl - swarm.pose);        
         swarm.pose = swarm.pose + epsilon*swarm.vel;      
     end
-    
-    x = swarm.best_pose;
-    f_x = swarm.best_fitness;
+
 end
 
 %% PSO standard algorithm, visualization (Only 2D input)
-function [x,f_x] = PSO_standard_viz(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range,step)
+function swarm = PSO_standard_viz(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range,step)
     %Define more parameters
     k_rand_vel = 1;
     
@@ -170,6 +168,4 @@ function [x,f_x] = PSO_standard_viz(swarmsize,alpha,beta,gamma,delta,epsilon,inf
         delete(sc_best);      
     end
     
-    x = swarm.best_pose;
-    f_x = swarm.best_fitness;
 end
