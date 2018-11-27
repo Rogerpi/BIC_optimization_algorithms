@@ -1,11 +1,11 @@
 % function function_plot
 % clear;close all
 global initial_flag
-global n_fun
+
 % Xmin=[-100,-100,-100,-100,-100,-100,0,-32,-5,-5,-0.5,-pi,-3,-100,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,2];
 % Xmax=[100,100,100,100,100,100,600,32,5,5,0.5,pi,1,100,5,5,5,5,5,5,5,5,5,5,5];
 
-for func_num=n_fun:n_fun
+for func_num=1:1
     if func_num==1 x=-100:5:100;y=x; %[-100,100]
     elseif func_num==2 x=-100:5:100; y=x;%[-10,10]
     elseif func_num==3 x=-100:5:100; y=x;%[-100,100]

@@ -21,7 +21,7 @@ end
 %% PSO Standard algorithm, no visualization
 function swarm = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio,f,max_it,dimention,min_range,max_range)
     %Define more parameters
-    k_rand_vel = 1;
+    %k_rand_vel = 1;
     
     %To spread the population
     range = max_range - min_range;
@@ -33,11 +33,12 @@ function swarm = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio
     %Algorithm Starts
     swarm = {};
     swarm.pose = rand(dimention,swarmsize).*range'*2 - range' + center'; %TODO: initialize
-    swarm.vel = rand(dimention,swarmsize)*k_rand_vel*2 - k_rand_vel;
+    swarm.vel = (rand(dimention,swarmsize).*range'*2 - range' + center')*1;
     swarm.mem_pose = swarm.pose;
     swarm.mem_fitness = repmat(-Inf,1,swarmsize); %first iteration is pointless so far     
     swarm.best_pose = [];
     swarm.best_fitness = -Inf;
+    swarm.progress = zeros(max_it,1); % This will save the progress of the best fitness for plotting out of the function
     
     %x_star = zeros(dimention,swarmsize);
     x_plus = zeros(dimention,swarmsize);
@@ -56,8 +57,12 @@ function swarm = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio
             end
         end
         %Update best of bests
-        [swarm.best_fitness,best_idx] = max(swarm.mem_fitness);
-        swarm.best_pose = swarm.mem_pose(:,best_idx);
+        [best_f,best_idx] = max(swarm.mem_fitness);
+        if best_f > swarm.best_fitness
+            swarm.best_fitness = best_f;
+            swarm.best_pose = swarm.mem_pose(:,best_idx);
+        end
+        swarm.progress(it) = swarm.best_fitness;
         
         %fill x_star
         x_star = swarm.mem_pose;
@@ -75,12 +80,27 @@ function swarm = PSO_standard(swarmsize,alpha,beta,gamma,delta,epsilon,inf_ratio
         x_excl = repmat(swarm.best_pose,1,swarmsize);       
         
         %Get b, c, d
-        b = rand(dimention,1)*beta;
-        c = rand(dimention,1)*gamma;
-        d = rand(dimention,1)*delta;
+        b = rand(dimention,swarmsize)*beta;
+        c = rand(dimention,swarmsize)*gamma;
+        d = rand(dimention,swarmsize)*delta;
         
         swarm.vel = alpha*swarm.vel + b.*(x_star-swarm.pose) + c.*(x_plus - swarm.pose) + d.*(x_excl - swarm.pose);        
         swarm.pose = swarm.pose + epsilon*swarm.vel;      
+    end
+    
+    %Update best particles again before finalizing, as updates are done at
+    %the end of the algorithm
+    for p =1:swarmsize %TODO vectorize
+        if fitness(p) > swarm.mem_fitness(p)
+            swarm.mem_fitness(p) = fitness(p);
+            swarm.mem_pose(:,p) = swarm.pose(:,p);
+        end
+    end
+    %Update best of bests
+    [best_f,best_idx] = max(swarm.mem_fitness);
+    if best_f > swarm.best_fitness
+        swarm.best_fitness = best_f;
+        swarm.best_pose = swarm.mem_pose(:,best_idx);
     end
 
 end
@@ -109,6 +129,8 @@ function swarm = PSO_standard_viz(swarmsize,alpha,beta,gamma,delta,epsilon,inf_r
     swarm.mem_fitness = repmat(-Inf,1,swarmsize); %first iteration is pointless so far     
     swarm.best_pose = [];
     swarm.best_fitness = -Inf;
+    swarm.progress = zeros(max_it,1); % This will save the progress of the best fitness for plotting out of the function
+    
     toc
     
     %x_star = zeros(dimention,swarmsize);
@@ -133,8 +155,11 @@ function swarm = PSO_standard_viz(swarmsize,alpha,beta,gamma,delta,epsilon,inf_r
             end
         end
         %Update best of bests
-        [swarm.best_fitness,best_idx] = max(swarm.mem_fitness);
-        swarm.best_pose = swarm.mem_pose(:,best_idx);
+        [best_f,best_idx] = max(swarm.mem_fitness);
+        if best_f > swarm.best_fitness
+            swarm.best_fitness = best_f;
+            swarm.best_pose = swarm.mem_pose(:,best_idx);
+        end
         
         %Print
         sc = scatter3(swarm.pose(2,:),swarm.pose(1,:),-fitness);
